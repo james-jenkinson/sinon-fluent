@@ -4,7 +4,16 @@ import * as sinon from "sinon";
 const stub = <T extends FluentInterface>(interfaceStructure: T): FluentStub<T> => {
   const result = mapValues(
     interfaceStructure,
-    (val) => sinon.stub().returns(val)) as FluentStub<T>;
+    (val) => {
+      if (typeof val !== "object") {
+        return sinon.stub().returns(val);
+      }
+
+      const returnVal = stub(val);
+      const sinonStub = sinon.stub().returns(returnVal);
+
+      return Object.assign(sinonStub, returnVal);
+    }) as FluentStub<T>;
 
   return result;
 };
