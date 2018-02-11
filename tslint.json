@@ -5,6 +5,6 @@
     "rules": {
         "eofline": true,
         "indent": [true, "spaces", 2],
-        "max-line-length": [true, 100]
+        "max-line-length": [true, 120]
     }
 }
