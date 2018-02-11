@@ -1,5 +1,4 @@
 import { SinonStub } from "sinon";
-export type SinonStub = SinonStub;
 
 export type FluentStub<T> =
   {

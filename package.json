@@ -1,8 +1,9 @@
 {
   "name": "sinon-fluent",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "A package to help stubbing of fluent interfaces with Sinon",
   "main": "build/fluentStub.js",
+  "types": "build/fluentStub.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/james-jenkinson/sinon-fluent"
