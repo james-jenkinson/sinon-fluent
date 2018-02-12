@@ -1,15 +1,15 @@
 import { expect, use } from "chai";
 import * as sinonChai from "sinon-chai";
-import fluentStub from "./../src/fluentStub";
-import { FluentStub } from "./../src/fluentTypes";
+import stub from "./../fluentStub";
+import { FluentStub } from "./../fluentTypes";
 import isStub from "./helpers/isStub";
 
 use(sinonChai);
 
-describe("Stub", () => {
+describe("fluentStub", () => {
   describe("Single stub", () => {
     const returnVal = Symbol("Return val");
-    const result = fluentStub({ func: returnVal });
+    const result = stub({ func: returnVal });
 
     it("should create a stub under the correct key", () => {
       isStub(result.func);
@@ -23,7 +23,7 @@ describe("Stub", () => {
   describe("Multiple stubs", () => {
     const returnVal1 = Symbol("First return value");
     const returnVal2 = Symbol("Second return value");
-    const result = fluentStub({ func1: returnVal1, func2: returnVal2 });
+    const result = stub({ func1: returnVal1, func2: returnVal2 });
 
     it("should create stubs for all keys", () => {
       isStub(result.func1);
@@ -49,7 +49,7 @@ describe("Stub", () => {
         },
       },
     };
-    const result = fluentStub(stubInterface);
+    const result = stub(stubInterface);
 
     it("should set all inner keys as stubs", () => {
       isStub(result.func1);
@@ -72,7 +72,7 @@ describe("Stub", () => {
     let fluentStub: FluentStub<typeof inner3>;
 
     beforeEach(() => {
-      fluentStub = fluentStub(inner3);
+      fluentStub = stub(inner3);
       fluentStub.func3a().func2b().func1();
     });
 
@@ -94,7 +94,7 @@ describe("Stub", () => {
     let fluentStub: FluentStub<typeof structure>;
 
     beforeEach(() => {
-      fluentStub = fluentStub(structure);
+      fluentStub = stub(structure);
       fluentStub.foo(1, 2).bar(3, 4).lemon();
     });
 
@@ -108,6 +108,40 @@ describe("Stub", () => {
 
     it("should confirm no calls with different params", () => {
       expect(fluentStub.foo.with(1, 2).bar.with(3, 3).lemon).to.not.have.been.called;
+    });
+  });
+
+  describe("Using an existing object", () => {
+    it("Creates a stub on an existing object", () => {
+      const existing = {
+        foo: () => ({
+          bar: () => 8,
+        }),
+      };
+
+      stub({ bar: 7 }, existing, "foo");
+
+      expect(existing.foo().bar()).to.equal(7);
+    });
+
+    it("Creates a fluent chain on existing object", () => {
+      const existing = { foo: () => undefined };
+
+      stub({ func1: { func2: { func3: 99 }}}, existing, "foo");
+
+      const result = (existing.foo() as any).func1().func2().func3();
+      expect(result).to.equal(99);
+    });
+
+    it("Verifies calls on fluent chain", () => {
+      const existing = { foo: () => undefined };
+
+      const result = stub({ func1: { func2: { func3: null }}}, existing, "foo");
+
+      (existing.foo() as any).func1().func2().func3();
+      expect(result.func1).to.have.been.called;
+      expect(result.func1.func2).to.have.been.called;
+      expect(result.func1.func2.func3).to.have.been.called;
     });
   });
 });

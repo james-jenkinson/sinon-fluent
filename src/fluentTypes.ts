@@ -8,6 +8,6 @@ export type FluentStub<T> =
     with: (...args: any[]) => FluentStub<T>;
   } & SinonStub;
 
-export type FluentInterface = {
+export interface FluentInterface {
   [key: string]: any;
 };
