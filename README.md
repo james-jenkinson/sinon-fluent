@@ -44,3 +44,15 @@ existingObject
   .baz(); // returns 99
 
 ```
+### Assertion
+You can use the `with` filter, to assert calls to stubs based on arguments in the function chain.
+
+```javascript
+const fluentStub = stub({ foo: { bar: { baz: 'foo' } } });
+
+fluentStub.foo(1, 2).bar(3, 4).baz(5, 6); // 'foo'
+
+fluentStub.foo.with(1, 2).bar.with(3, 4).baz.with(5, 6).called;  // true
+fluentStub.foo.with(1, 99).bar.with(3, 4).baz.with(5, 6).called; // false
+fluentStub.foo.with(1, 2).bar.with(3, 4).baz.with(5, 99).called; // false
+```

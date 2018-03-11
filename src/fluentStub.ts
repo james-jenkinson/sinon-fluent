@@ -34,7 +34,7 @@ function fluentStub<T extends FluentInterface, T2>(interfaceStructure: T, object
 
 const filterByArguments =
   <T extends FluentInterface>(stubResult: sinon.SinonStub, interfaceStructure: T) => (...args: any[]) => {
-  return stubResult.calledWith(...args) ? stubResult : fluentStub(interfaceStructure);
+  return stubResult.calledWith(...args) ? stubResult : Object.assign(sinon.stub(), fluentStub(interfaceStructure));
 };
 
 export default fluentStub;

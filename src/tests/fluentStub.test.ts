@@ -109,6 +109,10 @@ describe("fluentStub", () => {
     it("should confirm no calls with different params", () => {
       expect(fluentStub.foo.with(1, 2).bar.with(3, 3).lemon).to.not.have.been.called;
     });
+
+    it("should confirm no calls with filtering higher up the chain", () => {
+      expect(fluentStub.foo.with(1, 3).bar.with(3, 4).lemon).to.not.have.been.called;
+    });
   });
 
   describe("Using an existing object", () => {
