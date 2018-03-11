@@ -11,22 +11,22 @@ function fluentStub<T extends FluentInterface, T2>(interfaceStructure: T, object
   const result = mapValues(
     interfaceStructure,
     (val) => {
+      let sinonStub: sinon.SinonStub;
+
       if (!isObject(val)) {
-        return sinon.stub().returns(val);
+        sinonStub = sinon.stub().returns(val);
+      } else if (isPromise(val)) {
+        sinonStub = sinon.stub().resolves(val);
+      } else {
+        const returnVal = fluentStub(val);
+        sinonStub = Object.assign(sinon.stub().returns(returnVal), returnVal);
       }
-
-      if (isPromise(val)) {
-        return sinon.stub().resolves(val);
-      }
-
-      const returnVal = fluentStub(val);
-      const sinonStub = sinon.stub().returns(returnVal);
 
       const decoratorFunctions = {
         with: filterByArguments(sinonStub, val),
       };
 
-      return Object.assign(sinonStub, returnVal, decoratorFunctions);
+      return Object.assign(sinonStub, decoratorFunctions);
     }) as FluentStub<T>;
 
   if (object && method) {
@@ -42,6 +42,6 @@ const filterByArguments =
   return stubResult.calledWith(...args) ? stubResult : Object.assign(sinon.stub(), fluentStub(interfaceStructure));
 };
 
-const isPromise = (val: any) => !!val && val.then && typeof val.then === 'function';
+const isPromise = (val: any) => !!val && val.then && typeof val.then === "function";
 
 export default fluentStub;

@@ -95,7 +95,7 @@ describe("fluentStub", () => {
 
     beforeEach(() => {
       fluentStub = stub(structure);
-      fluentStub.foo(1, 2).bar(3, 4).lemon();
+      fluentStub.foo(1, 2).bar(3, 4).lemon(5, 6);
     });
 
     it("should check calls with no argument filter", () => {
@@ -103,11 +103,11 @@ describe("fluentStub", () => {
     });
 
     it("should check calls between stubs with different params", () => {
-      expect(fluentStub.foo.with(1, 2).bar.with(3, 4).lemon).to.have.been.called;
+      expect(fluentStub.foo.with(1, 2).bar.with(3, 4).lemon.with(5, 6)).to.have.been.called;
     });
 
     it("should confirm no calls with different params", () => {
-      expect(fluentStub.foo.with(1, 2).bar.with(3, 3).lemon).to.not.have.been.called;
+      expect(fluentStub.foo.with(1, 2).bar.with(3, 3).lemon.with(5, 6)).to.not.have.been.called;
     });
 
     it("should confirm no calls with filtering higher up the chain", () => {
