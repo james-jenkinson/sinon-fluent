@@ -1,4 +1,5 @@
 import mapValues = require("lodash.mapvalues");
+import isObject = require("lodash.isobject");
 import * as sinon from "sinon";
 import { FluentInterface, FluentStub } from "./fluentTypes";
 
@@ -10,8 +11,12 @@ function fluentStub<T extends FluentInterface, T2>(interfaceStructure: T, object
   const result = mapValues(
     interfaceStructure,
     (val) => {
-      if (typeof val !== "object") {
+      if (!isObject(val)) {
         return sinon.stub().returns(val);
+      }
+
+      if (isPromise(val)) {
+        return sinon.stub().resolves(val);
       }
 
       const returnVal = fluentStub(val);
@@ -36,5 +41,7 @@ const filterByArguments =
   <T extends FluentInterface>(stubResult: sinon.SinonStub, interfaceStructure: T) => (...args: any[]) => {
   return stubResult.calledWith(...args) ? stubResult : Object.assign(sinon.stub(), fluentStub(interfaceStructure));
 };
+
+const isPromise = (val: any) => !!val && val.then && typeof val.then === 'function';
 
 export default fluentStub;
