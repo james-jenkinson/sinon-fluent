@@ -2,15 +2,15 @@
   "name": "sinon-fluent",
   "version": "0.9.7",
   "description": "A package to help stubbing of fluent interfaces with Sinon",
-  "main": "build/fluentStub.js",
-  "types": "build/fluentStub.d.ts",
+  "main": "lib/fluentStub.js",
+  "types": "lib/fluentStub.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/james-jenkinson/sinon-fluent"
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf build",
+    "clean": "rm -rf lib",
     "rebuild": "npm run clean && npm run build",
     "test": "mocha -r ts-node/register \"src/tests/**/*.test.ts\"",
     "lint": "tslint --project tsconfig.lint.json --fix",
