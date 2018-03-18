@@ -23,17 +23,28 @@ describe("fluentStub", () => {
   describe("Multiple stubs", () => {
     const returnVal1 = Symbol("First return value");
     const returnVal2 = Symbol("Second return value");
-    const result = stub({ func1: returnVal1, func2: returnVal2 });
+    const promiseReturn = Symbol("Return value of promise");
+    const result = stub({ func1: returnVal1, func2: returnVal2, promise: Promise.resolve(promiseReturn) });
 
     it("should create stubs for all keys", () => {
       isStub(result.func1);
       isStub(result.func2);
+      isStub(result.promise);
     });
 
     it("should set return value for all keys", () => {
       expect(result.func1()).equals(returnVal1);
       expect(result.func2()).equals(returnVal2);
     });
+
+    it("should support promises", (done) => {
+      const ret = result.promise();
+      result.promise().then(v => { 
+        expect(v).to.equal(promiseReturn);
+        done();
+      });
+    });
+  });
   });
 
   describe("Nested stubs", () => {
