@@ -1,10 +1,8 @@
-import { expect, use } from "chai";
-import * as sinonChai from "sinon-chai";
+import { expect } from "chai";
 import stub from "./../fluentStub";
 import { FluentStub } from "./../fluentTypes";
+import returnVal from "./../return";
 import isStub from "./helpers/isStub";
-
-use(sinonChai);
 
 describe("fluentStub", () => {
   describe("Single stub", () => {
@@ -45,6 +43,15 @@ describe("fluentStub", () => {
       });
     });
   });
+
+  describe("Using returnVal to return an object", () => {
+    const value = { fooVal: { barVal: "bar" } };
+    const result = stub({ foo: { bar: returnVal(value) }})
+
+    it("Should return the object value", () => {
+      const returnValue = result.foo().bar();
+      expect(returnValue).to.deep.equal(value);
+    });
   });
 
   describe("Nested stubs", () => {
