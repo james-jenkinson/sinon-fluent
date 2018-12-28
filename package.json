@@ -1,6 +1,6 @@
 {
   "name": "sinon-fluent",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "A package to help stubbing of fluent interfaces with Sinon",
   "main": "build/fluentStub.js",
   "types": "build/fluentStub.d.ts",

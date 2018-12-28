@@ -103,11 +103,11 @@ describe("fluentStub", () => {
     });
 
     it("should check calls between stubs with different params", () => {
-      expect(fluentStub.foo.with(1, 2).bar.with(3, 4).lemon.with(5, 6)).to.have.been.called;
+      expect(fluentStub.foo.with(1, 2).bar.with(3, 4).lemon).to.have.been.calledWith(5, 6);
     });
 
     it("should confirm no calls with different params", () => {
-      expect(fluentStub.foo.with(1, 2).bar.with(3, 3).lemon.with(5, 6)).to.not.have.been.called;
+      expect(fluentStub.foo.with(1, 2).bar.with(3, 3).lemon).to.not.have.been.called;
     });
 
     it("should confirm no calls with filtering higher up the chain", () => {
@@ -146,6 +146,24 @@ describe("fluentStub", () => {
       expect(result.func1).to.have.been.called;
       expect(result.func1.func2).to.have.been.called;
       expect(result.func1.func2.func3).to.have.been.called;
+    });
+  });
+
+  describe('Filtered setups', () => {
+    const fluentStub = stub({ func1: { func2: { func3: "foo" } } });
+
+    it("should allow setups based on filtered values", () => {
+      const returnVal = Symbol('The unique return valued');
+
+      fluentStub.func1.whenGiven(1, 2).func2.whenGiven(3, 4).func3.returns(returnVal);
+
+      const returnA = fluentStub.func1(1, 2).func2(3, 4).func3();
+      const returnB = fluentStub.func1(1, 3).func2(3, 4).func3();
+      const returnC = fluentStub.func1(1, 2).func2(3, 5).func3();
+
+      expect(returnA).to.equal(returnVal);
+      expect(returnB).to.equal("foo");
+      expect(returnC).to.equal("foo");
     });
   });
 });

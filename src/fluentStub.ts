@@ -12,6 +12,7 @@ function fluentStub<T extends FluentInterface, T2>(interfaceStructure: T, object
     interfaceStructure,
     (val) => {
       let sinonStub: sinon.SinonStub;
+      const setupContainer = sinon.stub();
 
       if (!isObject(val)) {
         sinonStub = sinon.stub().returns(val);
@@ -24,6 +25,7 @@ function fluentStub<T extends FluentInterface, T2>(interfaceStructure: T, object
 
       const decoratorFunctions = {
         with: filterByArguments(sinonStub, val),
+        whenGiven: filteredSetups(sinonStub, val, setupContainer),
       };
 
       return Object.assign(sinonStub, decoratorFunctions);
@@ -41,6 +43,19 @@ const filterByArguments =
   <T extends FluentInterface>(stubResult: sinon.SinonStub, interfaceStructure: T) => (...args: any[]) => {
   return stubResult.calledWith(...args) ? stubResult : Object.assign(sinon.stub(), fluentStub(interfaceStructure));
 };
+
+const filteredSetups =
+  <T extends FluentInterface>(stubResult: sinon.SinonStub, interfaceStructure: T, setupContainer: sinon.SinonStub) => (...args: any[]) => {
+  let currentReturnValue: FluentStub<T> = setupContainer(...args);
+
+  if (currentReturnValue === undefined) {
+    currentReturnValue = fluentStub(interfaceStructure);
+    stubResult.withArgs(...args).returns(currentReturnValue);
+    setupContainer.withArgs(...args).returns(currentReturnValue);
+  }
+
+  return currentReturnValue;
+}
 
 const isPromise = (val: any) => !!val && val.then && typeof val.then === "function";
 
