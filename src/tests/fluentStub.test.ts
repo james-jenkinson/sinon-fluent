@@ -1,10 +1,8 @@
-import { expect, use } from "chai";
-import * as sinonChai from "sinon-chai";
+import { expect } from "chai";
 import stub from "./../fluentStub";
 import { FluentStub } from "./../fluentTypes";
+import returnVal from "./../return";
 import isStub from "./helpers/isStub";
-
-use(sinonChai);
 
 describe("fluentStub", () => {
   describe("Single stub", () => {
@@ -23,16 +21,36 @@ describe("fluentStub", () => {
   describe("Multiple stubs", () => {
     const returnVal1 = Symbol("First return value");
     const returnVal2 = Symbol("Second return value");
-    const result = stub({ func1: returnVal1, func2: returnVal2 });
+    const promiseReturn = Symbol("Return value of promise");
+    const result = stub({ func1: returnVal1, func2: returnVal2, promise: Promise.resolve(promiseReturn) });
 
     it("should create stubs for all keys", () => {
       isStub(result.func1);
       isStub(result.func2);
+      isStub(result.promise);
     });
 
     it("should set return value for all keys", () => {
       expect(result.func1()).equals(returnVal1);
       expect(result.func2()).equals(returnVal2);
+    });
+
+    it("should support promises", (done) => {
+      const ret = result.promise();
+      result.promise().then(v => { 
+        expect(v).to.equal(promiseReturn);
+        done();
+      });
+    });
+  });
+
+  describe("Using returnVal to return an object", () => {
+    const value = { fooVal: { barVal: "bar" } };
+    const result = stub({ foo: { bar: returnVal(value) }})
+
+    it("Should return the object value", () => {
+      const returnValue = result.foo().bar();
+      expect(returnValue).to.deep.equal(value);
     });
   });
 
