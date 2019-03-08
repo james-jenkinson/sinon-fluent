@@ -2,6 +2,7 @@ import mapValues = require("lodash.mapvalues");
 import isObject = require("lodash.isobject");
 import * as sinon from "sinon";
 import { FluentInterface, FluentStub } from "./fluentTypes";
+import { returnKey } from "./constants";
 
 function fluentStub<T extends FluentInterface>(interfaceStructure: T): FluentStub<T>;
 function fluentStub<T extends FluentInterface, T2>(interfaceStructure: T, object: T2, method: keyof T2): FluentStub<T>;
@@ -14,7 +15,7 @@ function fluentStub<T extends FluentInterface, T2>(interfaceStructure: T, object
       let sinonStub: sinon.SinonStub;
       const setupContainer = sinon.stub();
 
-      if (!isObject(val)) {
+      if (!isObject(val) || isReturnValue(val)) {
         sinonStub = sinon.stub().returns(val);
       } else if (isPromise(val)) {
         sinonStub = sinon.stub().resolves(val);
@@ -58,5 +59,7 @@ const filteredSetups =
 }
 
 const isPromise = (val: any) => !!val && val.then && typeof val.then === "function";
+
+const isReturnValue = (val: any) => val && val.returnKey === returnKey;
 
 export default fluentStub;
